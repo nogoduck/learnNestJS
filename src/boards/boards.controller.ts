@@ -5,6 +5,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UsePipes,
@@ -20,24 +21,16 @@ import { Board } from './board.entity';
 export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
-  // @Get('/')
-  // getAllBoard(): Board[] {
-  //   return this.boardsService.getAllBoards();
-  // }
-  //
+  @Get('/')
+  getAllBoard(): Promise<Board[]> {
+    return this.boardsService.getAllBoards();
+  }
 
-  @Post()
+  @Post('/')
   @UsePipes(ValidationPipe)
   createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
     return this.boardsService.createBoard(createBoardDto);
   }
-
-  // @Post('/create')
-  // createBoard(@Body() createBoardDto: CreateBoardDto): Board {
-  //   console.log('body >> ', createBoardDto);
-  //   return this.boardsService.createBoard(createBoardDto);
-  // }
-  //
 
   //@Param에 아무 인자도 적지 않으면 모든 파라미터를 가져올 수 있다.
   @Get('/:id')
@@ -45,25 +38,16 @@ export class BoardsController {
     return this.boardsService.getBoardById(id);
   }
 
-  // @Get('/:id')
-  // getBoardById(@Param('id') id: string): Board {
-  //   const found = this.boardsService.getBoardById(id);
-  //   if (!found) throw new NotFoundException(`Can't find Board width id ${id}`);
-  //   return found;
-  // }
-  //
-  // @Delete('/')
-  // deleteBoard(@Param('id') id: string): void {
-  //   const found = this.getBoardById(id);
-  //   return this.boardsService.deleteBoard(found.id);
-  // }
-  //
-  // @Patch('/:id/status')
-  // updateBoardStatus(
-  //   @Param('id') id: string,
-  //   @Body('status', BoardStatusValidationPipe) status: BoardStatus,
-  // ): Board {
-  //   // console.log(id, status);
-  //   return this.boardsService.updateBoardStatus(id, status);
-  // }
+  @Delete('/:id')
+  deleteBoard(@Param('id') id: number): Promise<void> {
+    return this.boardsService.deleteBoard(id);
+  }
+
+  @Patch('/:id/status')
+  updateBoardStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('status', BoardStatusValidationPipe) status: BoardStatus,
+  ) {
+    return this.boardsService.updateBoardStatus(id, status);
+  }
 }
