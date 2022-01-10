@@ -1,7 +1,10 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
-import { ConflictException } from '@nestjs/common';
+import {
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 
 @EntityRepository(User)
@@ -11,8 +14,6 @@ export class UserRepository extends Repository<User> {
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
-    console.log('salt >> ', salt);
-    console.log('hashedPassword >> ', hashedPassword);
 
     const user = this.create({ username, password: hashedPassword });
     try {
@@ -20,8 +21,9 @@ export class UserRepository extends Repository<User> {
     } catch (error) {
       if (error.code === '23505') {
         throw new ConflictException('Existing username');
+      } else {
+        throw new InternalServerErrorException();
       }
-      console.error(error);
     }
   }
 }
