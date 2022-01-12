@@ -1,0 +1,10 @@
+db:
+  host: 'localhost'
+  username: 'postgres'
+  password: '1114'
+  # synchronize: true (서버를 시작할때마다 엔티티를 새롭게 생성해준다
+  #              배포 환경에서는 새롭게 생성하다 데이터가 손실될 수 있기 때문 )
+  synchronize: true
+
+jwt:
+  secret: 'SecretKey'
